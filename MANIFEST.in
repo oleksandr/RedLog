@@ -1,0 +1,3 @@
+include redlogapp README
+recursive-include redlog/images *
+recursive-include redlog/resources *

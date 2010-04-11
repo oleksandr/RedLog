@@ -1,0 +1,53 @@
+INTRO
+---------------------------------------------------------------
+I was writing this app during 2 evenings so don't expect it to be perfect.
+It solves my tasks and tasks of my colleagues. If you want to improve it - feel free to do
+whatever you want with this code. 
+
+HOW DOES IT WORK?
+---------------------------------------------------------------
+- Redmine's API support is poor :(
+- The app uses twill browser to login into Redmine and fetch RSS with issues & to log time 
+using Redmine's form
+- The app creates $HOME/.redlog/cache.sqlite3 and stores credentials, issues and tracked time there
+
+PREREQUISITES
+---------------------------------------------------------------
+In order to run UI you would need to install:
+1. QT
+http://qt.nokia.com/products/platform/
+2. SIP
+http://www.riverbankcomputing.co.uk/software/sip/download
+3. PyQT
+http://www.riverbankcomputing.co.uk/software/pyqt/download
+4. twill
+5. feedparser
+6. py2exe (for Win platforms)
+
+
+CONFIGURATION
+---------------------------------------------------------------
+Edit redlog/settings.py and specify the location of your Redmine installation:
+
+REDMINE_BASE_URL = u'http://my-redmine-installation'
+
+
+RUNNING
+---------------------------------------------------------------
+
+Running from sources:
+
+$ python redlogapp
+or
+$ python redlog/main.py
+
+
+CREATING .EXE (WINDOWS ONLY)
+---------------------------------------------------------------
+$ python setup.py sdist
+$ cd dist
+$ tar zxvf RedLog-X.X.tar.gz
+$ cd RedLog-X.X
+$ python setup.py py2exe
+$ cd dist
+$ main.exe :)
