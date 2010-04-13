@@ -28,8 +28,11 @@ http://www.riverbankcomputing.co.uk/software/pyqt/download
 CONFIGURATION
 ---------------------------------------------------------------
 Edit redlog/settings.py and specify the location of your Redmine installation:
-
 REDMINE_BASE_URL = u'http://my-redmine-installation'
+
+Open Redmine -> Administration and create an activity to be used for time logging "Mixed activitiy". 
+Lookup its ID (i.e. 14) and put into settings:
+REDMINE_ACTIVITIES = {'Mixed activity': '14'}
 
 
 RUNNING
