@@ -5,6 +5,7 @@ import sqlite3
 import datetime
 import re
 from redlog import redmine
+import csv
 
 class RemoteIssuesStore(object):
     '''
@@ -27,8 +28,41 @@ class RemoteIssuesStore(object):
         return issues
     
     def submit(self, issue, hours, activity, comments):
-        redmine.post_time(self.base_url, self.username, self.password, issue, hours, activity, comments)
+        redmine.post_time(self.base_url, self.username, self.password, issue, 
+                          hours, activity, comments)
         return True
+    
+    def get_issues_by_query_id(self, query_id):
+        issues = []
+        issues_csv = redmine.get_issues_by_query_id(self.base_url, self.username, 
+                                                     self.password, query_id)
+        # The reader is hard-coded to recognise either '\r' or '\n'
+        # as end-of-line, and ignores lineterminator. 
+        # This behavior may change in the future.
+        issues_csv = issues_csv.replace('\r\n', ' ')
+        lines = issues_csv.split('\n')
+        for line in lines[1:]:
+            line_items_iter = csv.reader([line], delimiter=',', quotechar='"')
+            line_items = line_items_iter.next()
+            #a = 0
+            #for m in line_items:
+            #    print '%s - %s' % (a, m)
+            #    a = a + 1
+            try:
+                if len(line_items) > 1:                    
+                    issues.append(
+                                  {'#': line_items[0],
+                                   'status': line_items[1],
+                                   'tracker': line_items[3],
+                                   'priority': line_items[4],
+                                   'subject': line_items[5],
+                                   'assigned to': line_items[6],
+                                   'estimate time': line_items[13],
+                                   '% done': line_items[12]
+                                   })
+            except:
+                raise Exception, "Can't parse line: '%s'. Result list is %s" % (line, line_items)
+        return issues
         
 
 class LocalStore(object):

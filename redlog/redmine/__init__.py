@@ -40,6 +40,14 @@ def get_issues(base_url, username, password):
 
     return feedparser.parse(rss_str)
 
+def get_issues_by_query_id(base_url, username, password, query_id):
+    b = get_browser()
+    _login(b, base_url, username, password)
+
+    b.go("%s/projects/nimblecrm/issues.csv?query_id=%s" % (base_url, query_id))
+    
+    return b.get_html()
+
 def post_time(base_url, username, password, issue, hours, activity, comments):
     _login(b, base_url, username, password)
     
