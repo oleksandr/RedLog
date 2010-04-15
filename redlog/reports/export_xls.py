@@ -110,7 +110,7 @@ def start(argv):
     logging.debug('Done')
     
 def usage():
-    print "usage: export_xls --query_id=QUERY_ID --file=FILE_TO_EXPORT"
+    print "usage: export_xls.py --query_id=QUERY_ID --file=FILE_TO_EXPORT"
     print "QUERY_ID is id of saved query in Redmine. For example: 41"
     print "FILE_TO_EXPORT is full path to export file. For example: c:\export.xls"
 

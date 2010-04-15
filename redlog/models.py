@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import os
 import sqlite3
 import datetime
@@ -89,10 +88,26 @@ class LocalStore(object):
             c = self.connection.cursor()
             c.execute('''CREATE TABLE issues (issue TEXT, title TEXT, url TEXT, updated TEXT, spenttime REAL)''')
             c.execute('''CREATE TABLE settings (username TEXT, password TEXT)''')
+            c.execute('''CREATE TABLE issues_by_query (issue_id INTEGER, query_id INTEGER, status TEXT, saved DATETIME)''')
             self.connection.commit()
             c.close()
         else:
             self.connection = sqlite3.connect(self.cache_file)
+            
+    def save_issue_by_query(self, issue_id, query_id, status, saved_datetime):
+        c = self.connection.cursor()
+        c.execute("INSERT INTO issues_by_query (issue_id, query_id, status, saved) VALUES (?, ?, ?, ?)", 
+                  (issue_id, query_id, status, saved_datetime))
+        self.connection.commit()
+        c.close()
+        return True
+        
+    def clear_issues_by_query(self, query_id):
+        c = self.connection.cursor()
+        c.execute("DELETE FROM issues_by_query WHERE query_id = ?", (query_id,))
+        self.connection.commit()
+        c.close()
+        return True
     
     def get_credentials(self):
         c = self.connection.cursor()

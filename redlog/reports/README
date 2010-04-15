@@ -1,0 +1,14 @@
+GENERAL
+---------------------------------------------------------------
+Some useful console-ready functions for export data from Redmine
+
+PREREQUISITES
+---------------------------------------------------------------
+In order to run you would need to install (except standart requirements):
+1. xlwt
+http://pypi.python.org/pypi/xlwt
+
+RUNNING
+---------------------------------------------------------------
+$ python redlog/reports/export_xls.py
+$ python redlog/reports/save_query_issues.py
