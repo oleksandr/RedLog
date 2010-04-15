@@ -94,10 +94,18 @@ class LocalStore(object):
         else:
             self.connection = sqlite3.connect(self.cache_file)
             
-    def save_issue_by_query(self, issue_id, query_id, status, saved_datetime):
+    def get_issues_by_query(self, query_id, start_datetime, end_datetime):
+        c = self.connection.cursor()
+        c.execute("SELECT issue_id, query_id, status, saved FROM issues_by_query WHERE saved BETWEEN ? AND ?", 
+                  (start_datetime, end_datetime,))
+        result = c.fetchall()
+        c.close()
+        return result
+    
+    def save_issues_by_query(self, issue_id, query_id, status, saved_datetime):
         c = self.connection.cursor()
         c.execute("INSERT INTO issues_by_query (issue_id, query_id, status, saved) VALUES (?, ?, ?, ?)", 
-                  (issue_id, query_id, status, saved_datetime))
+                  (issue_id, query_id, status, saved_datetime,))
         self.connection.commit()
         c.close()
         return True

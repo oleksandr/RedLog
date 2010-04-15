@@ -41,8 +41,8 @@ def start(argv):
     logging.debug('Getting issues...')
     issues = remote_store.get_issues_by_query_id(query_id) #41
     
-    logging.debug('Clear issues by query_id=%s in local store' % query_id)
-    localStore.clear_issues_by_query(query_id)
+    #logging.debug('Clear issues by query_id=%s in local store' % query_id)
+    #localStore.clear_issues_by_query(query_id)
     
     logging.debug('Saving new issues...')
     saved_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
