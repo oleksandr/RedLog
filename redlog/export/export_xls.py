@@ -2,6 +2,10 @@
 from redlog.models import RemoteIssuesStore
 from redlog import settings
 import xlwt
+import logging
+import getopt, sys
+
+logging.basicConfig(level = logging.DEBUG)
 
 class XlsExporter:
     
@@ -57,11 +61,37 @@ class XlsExporter:
         
         wb.save(self.output_file)
 
-def start():
-    remote_store = RemoteIssuesStore(settings.REDMINE_BASE_URL, 'username', 'password')
-    issues = remote_store.get_issues_by_query_id(41)
+def start(argv):
+    try:                          
+        opts, args = getopt.getopt(argv, "", ["query_id="])
+    except getopt.GetoptError:
+        usage()
+        sys.exit(2)
+        
+    if len(opts) == 0:
+        usage()
+        sys.exit(2)
+        
+    opt, arg = opts[0]
+    if opt == "--query_id":
+        query_id = arg
+    else:
+        usage()
+        sys.exit(2)
+    
+    logging.debug('XLS export process started (query_id = %s)' % query_id)
+    username = 'username'
+    password = 'password'
+    logging.debug('Connect to Redmine with username "%s"' % username)
+    remote_store = RemoteIssuesStore(settings.REDMINE_BASE_URL, username, password)
+    
+    issues = remote_store.get_issues_by_query_id(query_id) #41
     xls_exporter = XlsExporter(issues, "c:\\export.xls")
     xls_exporter.export()
+    
+def usage():
+    print "usage: export_xls --query_id=QUERY_ID"
+    print "QUERY_ID is id of saved query in Redmine"
 
 if __name__ == '__main__':
-    start()
+    start(sys.argv[1:])
