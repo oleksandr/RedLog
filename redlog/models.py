@@ -61,6 +61,9 @@ class RemoteIssuesStore(object):
                                    })
             except:
                 raise Exception, "Can't parse line: '%s'. Result list is %s" % (line, line_items)
+            for issue in issues:
+                for key in issue.keys():
+                    issue[key] = unicode(issue[key])
         return issues
         
 
@@ -88,7 +91,13 @@ class LocalStore(object):
             c = self.connection.cursor()
             c.execute('''CREATE TABLE issues (issue TEXT, title TEXT, url TEXT, updated TEXT, spenttime REAL)''')
             c.execute('''CREATE TABLE settings (username TEXT, password TEXT)''')
-            c.execute('''CREATE TABLE issues_by_query (issue_id INTEGER, query_id INTEGER, status TEXT, saved DATETIME)''')
+            c.execute('''CREATE TABLE issues_by_query (query_id INTEGER,
+                        issue_id INTEGER, 
+                        status TEXT, tracker TEXT,
+                        priority TEXT, subject TEXT,
+                        assigned_to TEXT, estimate DECIMAL(10, 1),
+                        done INTEGER,
+                        saved DATETIME)''')
             self.connection.commit()
             c.close()
         else:
@@ -96,16 +105,34 @@ class LocalStore(object):
             
     def get_issues_by_query(self, query_id, start_datetime, end_datetime):
         c = self.connection.cursor()
-        c.execute("SELECT issue_id, query_id, status, saved FROM issues_by_query WHERE saved BETWEEN ? AND ?", 
+        c.execute("SELECT * FROM issues_by_query WHERE saved BETWEEN ? AND ?", 
                   (start_datetime, end_datetime,))
-        result = c.fetchall()
+        result_sql = c.fetchall()
+        result = []
         c.close()
+        
+        for item in result_sql:
+            result.append({'#': item[1],
+                          'status': item[2],
+                          'tracker': item[3],
+                          'priority': item[4],
+                          'subject': item[5],
+                          'assigned to': item[6],
+                          'estimate time': item[7],
+                          '% done': item[8]
+                        })
         return result
     
-    def save_issues_by_query(self, issue_id, query_id, status, saved_datetime):
+    def save_issue_by_query(self, query_id, issue_data, saved_datetime):
         c = self.connection.cursor()
-        c.execute("INSERT INTO issues_by_query (issue_id, query_id, status, saved) VALUES (?, ?, ?, ?)", 
-                  (issue_id, query_id, status, saved_datetime,))
+        c.execute(u"""INSERT INTO issues_by_query (query_id,
+                        issue_id, status, tracker,
+                        priority, subject,
+                        assigned_to, estimate, done, saved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", 
+                  (query_id, issue_data['#'], issue_data['status'], issue_data['tracker'],
+                            issue_data['priority'], issue_data['subject'],
+                            issue_data['assigned to'], issue_data['estimate time'],
+                            issue_data['% done'], saved_datetime,))
         self.connection.commit()
         c.close()
         return True

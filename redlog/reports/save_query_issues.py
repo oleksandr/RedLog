@@ -47,7 +47,7 @@ def start(argv):
     logging.debug('Saving new issues...')
     saved_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for issue in issues:
-        localStore.save_issue_by_query(issue['#'], query_id, issue['status'], saved_datetime)
+        localStore.save_issue_by_query(query_id, issue, saved_datetime)
     
     logging.debug('Done')
 
