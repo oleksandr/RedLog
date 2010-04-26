@@ -31,6 +31,35 @@ class RemoteIssuesStore(object):
                           hours, activity, comments)
         return True
     
+    def get_time_entries(self):
+        time_entries = []
+        time_entries_csv = redmine.get_time_entries(self.base_url, self.username, 
+                                                     self.password)
+        time_entries_csv = time_entries_csv.replace('\r\n', ' ')
+        lines = time_entries_csv.split('\n')
+        for line in lines[1:]:
+            line_items_iter = csv.reader([line], delimiter=',', quotechar='"')
+            line_items = line_items_iter.next()
+            try:
+                if len(line_items) > 1:                    
+                    time_entries.append(
+                                  {'date': line_items[0],
+                                   'user': line_items[1],
+                                   'activity': line_items[2],
+                                   'project': line_items[3],
+                                   'issue': line_items[4],
+                                   'tracker': line_items[5],
+                                   'subject': line_items[6],
+                                   'hours': line_items[7],
+                                   'comment': line_items[8]
+                                   })
+            except:
+                raise Exception, "Can't parse line: '%s'. Result list is %s" % (line, line_items)
+            for entry in time_entries:
+                for key in entry.keys():
+                    entry[key] = unicode(entry[key])
+        
+    
     def get_issues_by_query_id(self, query_id):
         issues = []
         issues_csv = redmine.get_issues_by_query_id(self.base_url, self.username, 
@@ -105,7 +134,7 @@ class LocalStore(object):
             
     def get_issues_by_query(self, query_id, start_datetime, end_datetime):
         c = self.connection.cursor()
-        c.execute("SELECT * FROM issues_by_query WHERE saved BETWEEN ? AND ?", 
+        c.execute("SELECT * FROM issues_by_query WHERE saved BETWEEN ? AND ? ORDER BY issue_id DESC", 
                   (start_datetime, end_datetime,))
         result_sql = c.fetchall()
         result = []

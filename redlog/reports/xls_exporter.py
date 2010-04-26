@@ -17,6 +17,9 @@ class XlsExporter:
         header_style = xlwt.easyxf('font: bold on;')
         self.ws.write(row, column, text, style=header_style)
         
+    def get_default_style(self):
+        return xlwt.easyxf()
+        
     def get_green_background_style(self):
         return xlwt.easyxf('pattern: pattern solid, fore-colour light_green')
     

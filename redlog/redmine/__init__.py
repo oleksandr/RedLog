@@ -40,6 +40,14 @@ def get_issues(base_url, username, password):
 
     return feedparser.parse(rss_str)
 
+def get_time_entries(base_url, username, password):
+    b = get_browser()
+    _login(b, base_url, username, password)
+
+    b.go("%s/projects/nimblecrm/time_entries.atom?from=2009-02-01&to=2010-04-30" % base_url)
+    
+    return b.get_html()
+
 def get_issues_by_query_id(base_url, username, password, query_id):
     b = get_browser()
     _login(b, base_url, username, password)
