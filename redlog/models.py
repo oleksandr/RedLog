@@ -134,8 +134,8 @@ class LocalStore(object):
             
     def get_issues_by_query(self, query_id, start_datetime, end_datetime):
         c = self.connection.cursor()
-        c.execute("SELECT * FROM issues_by_query WHERE saved BETWEEN ? AND ? ORDER BY issue_id DESC", 
-                  (start_datetime, end_datetime,))
+        c.execute("SELECT * FROM issues_by_query WHERE query_id = ? AND saved BETWEEN ? AND ? ORDER BY issue_id DESC", 
+                  (query_id, start_datetime, end_datetime,))
         result_sql = c.fetchall()
         result = []
         c.close()

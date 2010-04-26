@@ -59,6 +59,7 @@ def start(argv):
     new_issues = remote_store.get_issues_by_query_id(query_id) #41
     
     def row_handler(exporter, issue):
+        # return exporter.get_default_style()
         for item in new_issues:           
             if unicode(item['#']) == unicode(issue['#']):
                 issue['% done'] = item['% done']
