@@ -1,44 +1,16 @@
 # -*- coding: utf-8 -*-
 from redlog.models import LocalStore, RemoteIssuesStore
 import logging
-import getopt, sys
+import sys
 from datetime import datetime
 from xls_exporter import XlsExporter
 from redlog import settings
+from common import parameters_parse
 
 logging.basicConfig(level = logging.DEBUG)
 
 def start(argv):
-    try:                          
-        opts, args = getopt.getopt(argv, "", ["query_id=", "start_date=", "file="])
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-     
-    if len(opts) < 3:
-        usage()
-        sys.exit(2)
-      
-    opt, arg = opts[0]
-    if opt == "--query_id":
-        query_id = arg
-    else:
-        usage()
-        sys.exit(2)
-        
-    opt, arg = opts[1]   
-    if opt == "--start_date":
-        start_date = datetime.strptime(arg, "%Y-%m-%d")
-    else:
-        usage()
-        sys.exit(2)
-        
-    opt, arg = opts[2]   
-    if opt == "--file":
-        export_file = arg
-    else:
-        usage()
-        sys.exit(2)
+    query_id, start_date, export_file = parameters_parse(argv, ['query_id', "start_date", 'file'], usage)
         
     localStore = LocalStore()
     logging.debug('Getting issues by query_id=%s and between %s and now' % (query_id, start_date))

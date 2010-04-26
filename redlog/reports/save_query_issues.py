@@ -1,29 +1,15 @@
 # -*- coding: utf-8 -*-
 from redlog.models import RemoteIssuesStore, LocalStore
 import logging
-import getopt, sys
+import sys
 from redlog import settings
 from datetime import datetime
+from common import parameters_parse
 
 logging.basicConfig(level = logging.DEBUG)
 
 def start(argv):
-    try:                          
-        opts, args = getopt.getopt(argv, "", ["query_id="])
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-        
-    if len(opts) < 1:
-        usage()
-        sys.exit(2)
-      
-    opt, arg = opts[0]
-    if opt == "--query_id":
-        query_id = arg
-    else:
-        usage()
-        sys.exit(2)
+    query_id = parameters_parse(argv, ['query_id'], usage)[0]
     
     logging.debug('Saving issues to local store (query_id = %s)' % query_id)
     

@@ -3,35 +3,14 @@ from redlog.models import RemoteIssuesStore, LocalStore
 from redlog import settings
 import xlwt
 import logging
-import getopt, sys
+import sys
 from xls_exporter import XlsExporter
+from common import parameters_parse
 
 logging.basicConfig(level = logging.DEBUG)
 
 def start(argv):
-    try:                          
-        opts, args = getopt.getopt(argv, "", ["file=", "query_id="])
-    except getopt.GetoptError:
-        usage()
-        sys.exit(2)
-        
-    if len(opts) < 2:
-        usage()
-        sys.exit(2)
-      
-    opt, arg = opts[0]
-    if opt == "--query_id":
-        query_id = arg
-    else:
-        usage()
-        sys.exit(2)
-    
-    opt, arg = opts[1]   
-    if opt == "--file":
-        export_file = arg
-    else:
-        usage()
-        sys.exit(2)
+    query_id, export_file = parameters_parse(argv, ['query_id', 'file'], usage)
     
     logging.debug('XLS export process started (query_id = %s)' % query_id)
     
