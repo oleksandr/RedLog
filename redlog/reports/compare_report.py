@@ -10,7 +10,9 @@ from common import parameters_parse
 logging.basicConfig(level = logging.DEBUG)
 
 def start(argv):
-    query_id, start_date, export_file = parameters_parse(argv, ['query_id', "start_date", 'file'], usage)
+    query_id, start_date_str, export_file = parameters_parse(argv, ['query_id', "start_date", 'file'], usage)
+    
+    start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
         
     localStore = LocalStore()
     logging.debug('Getting issues by query_id=%s and between %s and now' % (query_id, start_date))

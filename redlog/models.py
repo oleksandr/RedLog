@@ -31,10 +31,11 @@ class RemoteIssuesStore(object):
                           hours, activity, comments)
         return True
     
-    def get_time_entries(self):
+    def get_time_entries(self, from_date, to_date):
         time_entries = []
         time_entries_csv = redmine.get_time_entries(self.base_url, self.username, 
-                                                     self.password)
+                                                     self.password,
+                                                     from_date, to_date)
         time_entries_csv = time_entries_csv.replace('\r\n', ' ')
         lines = time_entries_csv.split('\n')
         for line in lines[1:]:
@@ -58,7 +59,7 @@ class RemoteIssuesStore(object):
             for entry in time_entries:
                 for key in entry.keys():
                     entry[key] = unicode(entry[key])
-        
+        return time_entries    
     
     def get_issues_by_query_id(self, query_id):
         issues = []
