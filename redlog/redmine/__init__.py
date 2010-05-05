@@ -50,6 +50,12 @@ def get_time_entries(base_url, username, password, from_date, to_date):
     
     return b.get_html()
 
+def get_time_entries_by_issue(base_url, username, password, issue_id):
+    b = get_browser()
+    _login(b, base_url, username, password)
+    b.go("%s/projects/nimblecrm/issues/%s/time_entries.csv" % (base_url, issue_id))
+    return b.get_html()
+
 def get_issues_by_query_id(base_url, username, password, query_id):
     b = get_browser()
     _login(b, base_url, username, password)

@@ -23,6 +23,9 @@ class XlsExporter:
     def get_green_background_style(self):
         return xlwt.easyxf('pattern: pattern solid, fore-colour light_green')
     
+    def get_yellow_background_style(self):
+        return xlwt.easyxf('pattern: pattern solid, fore-colour light_yellow')
+    
     def add_issues_list(self, issues, start_row = 0, issue_row_handler=None):
         logging.debug('Parsing issues...')
         ws = self.ws
@@ -46,7 +49,7 @@ class XlsExporter:
                 
         ws.write(start_row, 8, 'time to finish')
         ws.col(8).width = 0x0d00 + 100
-        
+                
         # default styles
         row_style = xlwt.Style.default_style
         num_style = xlwt.easyxf('', num_format_str='#,##0.00')
@@ -67,7 +70,15 @@ class XlsExporter:
             ws.write(i, 6, unicode(issue['estimate time']).replace('.', ','), num_style)
             ws.write(i, 7, unicode(issue['% done']).replace('.', ','), num_style)            
             ws.write(i, 8, xlwt.Formula("G%s - G%s/100*H%s" % (i + 1, i + 1, i + 1)), num_style)
+            
+            if issue.has_key('real time spend'):
+                ws.write(i, 9, unicode(issue['real time spend']).replace('.', ','), num_style)
             i = i + 1
+            
+        if len(issues) > 0:
+            if issues[0].has_key('real time spend'):
+                ws.write(start_row, 9, 'real time spend')
+                ws.col(9).width = 0x0d00 + 100
                   
         # add summary
         formula = "SUM(I%s:I%s)" % (start_row + 2, start_row + len(issues) + 1)

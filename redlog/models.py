@@ -31,19 +31,17 @@ class RemoteIssuesStore(object):
                           hours, activity, comments)
         return True
     
-    def get_time_entries(self, from_date, to_date):
+    def _time_entries_parsing(self, time_entries_csv, filter_by_issue=None):
         time_entries = []
-        time_entries_csv = redmine.get_time_entries(self.base_url, self.username, 
-                                                     self.password,
-                                                     from_date, to_date)
         time_entries_csv = time_entries_csv.replace('\r\n', ' ')
         lines = time_entries_csv.split('\n')
         for line in lines[1:]:
             line_items_iter = csv.reader([line], delimiter=',', quotechar='"')
             line_items = line_items_iter.next()
             try:
-                if len(line_items) > 1:                    
-                    time_entries.append(
+                if len(line_items) > 1:
+                    if filter_by_issue is None or unicode(line_items[4]) == unicode(filter_by_issue):               
+                        time_entries.append(
                                   {'date': line_items[0],
                                    'user': line_items[1],
                                    'activity': line_items[2],
@@ -59,7 +57,19 @@ class RemoteIssuesStore(object):
             for entry in time_entries:
                 for key in entry.keys():
                     entry[key] = unicode(entry[key])
-        return time_entries    
+        return time_entries
+    
+    def get_time_entries(self, from_date, to_date, filter_by_issue=None):
+        time_entries_csv = redmine.get_time_entries(self.base_url, self.username, 
+                                                     self.password,
+                                                     from_date, to_date)
+        return self._time_entries_parsing(time_entries_csv, filter_by_issue)
+    
+    def get_time_entries_by_issue(self, issue_id):
+        time_entries_csv = redmine.get_time_entries_by_issue(self.base_url, self.username, 
+                                                     self.password,
+                                                     issue_id)
+        return self._time_entries_parsing(time_entries_csv, None) 
     
     def get_issues_by_query_id(self, query_id):
         issues = []
