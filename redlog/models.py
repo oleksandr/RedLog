@@ -163,6 +163,26 @@ class LocalStore(object):
                         })
         return result
     
+    def get_all_issues_by_query(self, query_id):
+        c = self.connection.cursor()
+        c.execute("SELECT * FROM issues_by_query WHERE query_id = ? ORDER BY saved DESC", 
+                  (query_id,))
+        result_sql = c.fetchall()
+        result = []
+        c.close()
+        
+        for item in result_sql:
+            result.append({'#': item[1],
+                          'status': item[2],
+                          'tracker': item[3],
+                          'priority': item[4],
+                          'subject': item[5],
+                          'assigned to': item[6],
+                          'estimate time': item[7],
+                          '% done': item[8]
+                        })
+        return result
+    
     def save_issue_by_query(self, query_id, issue_data, saved_datetime):
         c = self.connection.cursor()
         c.execute(u"""INSERT INTO issues_by_query (query_id,
